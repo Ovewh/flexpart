@@ -49,36 +49,20 @@ FLEXPART-MPI-DBG = DBG_FLEXPART_MPI
 # Serial processing executable
 FLEXPART-SERIAL = FLEXPART
 
+# Default: System libraries gfortran v4.8
+F90       = ifort
+MPIF90    = mpif90
 
-ifeq ($(gcc), 4.9)
-# Compiled libraries under user ~flexpart, gfortran v4.9
-	ROOT_DIR = /homevip/flexpart/
-
-	F90	  = ${ROOT_DIR}/gcc-4.9.1/bin/gfortran
-	MPIF90    = ${ROOT_DIR}/bin/mpifort
-
-	INCPATH1  = ${ROOT_DIR}/gcc-4.9.1/include	
-	INCPATH2  = ${ROOT_DIR}/include
-	LIBPATH1 = ${ROOT_DIR}/lib
-else 
-# Compiled libraries under user ~flexpart, gfortran v5.4
-	ROOT_DIR = /homevip/flexpart/
-
-	F90	  = /usr/bin/gfortran
-	MPIF90    = /usr/bin/mpifort
-
-	INCPATH1  = ${ROOT_DIR}/gcc-5.4.0/include	
-	INCPATH2  = /usr/include
-	LIBPATH1 = ${ROOT_DIR}/gcc-5.4.0/lib
-endif
-
-
+INCPATH1 = /usr/include
+INCPATH2 = /cluster/software/ecCodes/2.9.2-intel-2018b/include 
+LIBPATH1 = /cluster/software/ecCodes/2.9.2-intel-2018b/lib 
 ### Enable netCDF output?
 ifeq ($(ncf), yes)
 	NCOPT = -DUSE_NCF -lnetcdff	
 else
 	NCOPT = -UUSE_NCF
 endif
+
 
 
 
@@ -91,15 +75,15 @@ O_LEV = 0 # [0,1,2,3,g,s,fast]
 O_LEV_DBG = g # [0,g]
 
 ## LIBRARIES
-#LIBS = -lgrib_api_f90 -lgrib_api -lm -ljasper -lnetcdff
-LIBS = -lgrib_api_f90 -lgrib_api -lm -ljasper $(NCOPT)
+LIBS = -leccodes_f90 -leccodes -lm -ljasper -DUSE_NCF  -lnetcdff
+#LIBS = -leccodes_f90 -leccodes -lm -ljasper $(NCOPT)
 
-FFLAGS   = -I$(INCPATH1) -I$(INCPATH2) -O$(O_LEV) -g -cpp -m64 -mcmodel=medium -fconvert=little-endian -frecord-marker=4 -fmessage-length=0 -flto=jobserver -O$(O_LEV) $(NCOPT) $(FUSER)  #-Warray-bounds -fcheck=all # -march=native
+FFLAGS   = -O$(O_LEV) -I$(INCPATH1) -I$(INCPATH2) -g -cpp -m64 -mcmodel=medium -O$(O_LEV) $(NCOPT) -traceback $(FUSER) #-Warray-bounds -fcheck=all # -march=native
 
-DBGFLAGS = -I$(INCPATH1) -I$(INCPATH2) -O$(O_LEV_DBG) -g3 -ggdb3 -cpp -m64 -mcmodel=medium -fconvert=little-endian -frecord-marker=4 -fmessage-length=0 -flto=jobserver -O$(O_LEV_DBG) $(NCOPT) -fbacktrace   -Wall  -fdump-core $(FUSER)  #  -ffpe-trap=invalid,overflow,denormal,underflow,zero  -Warray-bounds -fcheck=all
+DBGFLAGS = -I$(INCPATH1)  -O$(O_LEV_DBG) -g3 -ggdb3 -cpp -m64 -mcmodel=medium -fconvert=little-endian -frecord-marker=4 -fmessage-length=0 -flto=jobserver -O$(O_LEV_DBG) $(NCOPT) -fbacktrace   -Wall  -fdump-core $(FUSER)  #  -ffpe-trap=invalid,overflow,denormal,underflow,zero  -Warray-bounds -fcheck=all
 
-LDFLAGS  = $(FFLAGS) -L$(LIBPATH1) -Wl,-rpath,$(LIBPATH1) $(LIBS) #-L$(LIBPATH2)
-LDDEBUG  = $(DBGFLAGS) -L$(LIBPATH1) $(LIBS) #-L$(LIBPATH2)
+LDFLAGS  = $(FFLAGS) -L$(LIBPATH1) -Wl,-rpath,$(LIBS) 
+LDDEBUG  = $(DBGFLAGS) $(LIBS) -L$(LIBPATH2)
 
 MODOBJS = \
 par_mod.o    		com_mod.o \
