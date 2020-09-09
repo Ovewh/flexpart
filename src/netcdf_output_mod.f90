@@ -557,44 +557,42 @@ subroutine writeheader_netcdf(lnest)
      endif
 
      ! wet and dry deposition fields for forward runs
-     if (ldirect .eq. 1) then
-      if (wetdep) then
-          call nf90_err(nf90_def_var(ncid,'WD_spec'//anspec, nf90_float, depdIDs, &
-              wdsID, deflate_level = deflate_level, &
-              chunksizes = dep_chunksizes))
-          call nf90_err(nf90_put_att(ncid, wdsID, 'units', '1e-12 kg m-2'))
-          call nf90_err(nf90_put_att(ncid, wdsID, 'weta_gas', weta_gas(i)))
-          call nf90_err(nf90_put_att(ncid, wdsID, 'wetb_gas', wetb_gas(i)))
-          call nf90_err(nf90_put_att(ncid, wdsID, 'ccn_aero', ccn_aero(i)))
-          call nf90_err(nf90_put_att(ncid, wdsID, 'in_aero', in_aero(i)))
-          ! call nf90_err(nf90_put_att(ncid, wdsID, 'wetc_in', wetc_in(i)))
-          ! call nf90_err(nf90_put_att(ncid, wdsID, 'wetd_in', wetd_in(i)))
-          call nf90_err(nf90_put_att(ncid, wdsID, 'dquer', dquer(i)))
-          call nf90_err(nf90_put_att(ncid, wdsID, 'henry', henry(i)))
-          if (lnest) then
-            wdspecIDn(i) = wdsID
-          else
-            wdspecID(i) = wdsID
-          endif
-      endif
-      if (drydep) then
-          call nf90_err(nf90_def_var(ncid,'DD_spec'//anspec, nf90_float, depdIDs, &
-              ddsID, deflate_level = deflate_level, &
-              chunksizes = dep_chunksizes))
-          call nf90_err(nf90_put_att(ncid, ddsID, 'units', '1e-12 kg m-2'))
-          call nf90_err(nf90_put_att(ncid, ddsID, 'dryvel', dryvel(i)))
-          call nf90_err(nf90_put_att(ncid, ddsID, 'reldiff', reldiff(i)))
-          call nf90_err(nf90_put_att(ncid, ddsID, 'henry', henry(i)))
-          call nf90_err(nf90_put_att(ncid, ddsID, 'f0', f0(i)))
-          call nf90_err(nf90_put_att(ncid, ddsID, 'dquer', dquer(i)))
-          call nf90_err(nf90_put_att(ncid, ddsID, 'density', density(i)))
-          call nf90_err(nf90_put_att(ncid, ddsID, 'dsigma', dsigma(i)))
-          if (lnest) then
-            ddspecIDn(i) = ddsID
-          else
-            ddspecID(i) = ddsID
-          endif
-      endif
+    if (wetdep) then
+        call nf90_err(nf90_def_var(ncid,'WD_spec'//anspec, nf90_float, depdIDs, &
+            wdsID, deflate_level = deflate_level, &
+            chunksizes = dep_chunksizes))
+        call nf90_err(nf90_put_att(ncid, wdsID, 'units', '1e-12 kg m-2'))
+        call nf90_err(nf90_put_att(ncid, wdsID, 'weta_gas', weta_gas(i)))
+        call nf90_err(nf90_put_att(ncid, wdsID, 'wetb_gas', wetb_gas(i)))
+        call nf90_err(nf90_put_att(ncid, wdsID, 'ccn_aero', ccn_aero(i)))
+        call nf90_err(nf90_put_att(ncid, wdsID, 'in_aero', in_aero(i)))
+        ! call nf90_err(nf90_put_att(ncid, wdsID, 'wetc_in', wetc_in(i)))
+        ! call nf90_err(nf90_put_att(ncid, wdsID, 'wetd_in', wetd_in(i)))
+        call nf90_err(nf90_put_att(ncid, wdsID, 'dquer', dquer(i)))
+        call nf90_err(nf90_put_att(ncid, wdsID, 'henry', henry(i)))
+        if (lnest) then
+          wdspecIDn(i) = wdsID
+        else
+          wdspecID(i) = wdsID
+        endif
+    endif
+    if (drydep) then
+        call nf90_err(nf90_def_var(ncid,'DD_spec'//anspec, nf90_float, depdIDs, &
+            ddsID, deflate_level = deflate_level, &
+            chunksizes = dep_chunksizes))
+        call nf90_err(nf90_put_att(ncid, ddsID, 'units', '1e-12 kg m-2'))
+        call nf90_err(nf90_put_att(ncid, ddsID, 'dryvel', dryvel(i)))
+        call nf90_err(nf90_put_att(ncid, ddsID, 'reldiff', reldiff(i)))
+        call nf90_err(nf90_put_att(ncid, ddsID, 'henry', henry(i)))
+        call nf90_err(nf90_put_att(ncid, ddsID, 'f0', f0(i)))
+        call nf90_err(nf90_put_att(ncid, ddsID, 'dquer', dquer(i)))
+        call nf90_err(nf90_put_att(ncid, ddsID, 'density', density(i)))
+        call nf90_err(nf90_put_att(ncid, ddsID, 'dsigma', dsigma(i)))
+        if (lnest) then
+          ddspecIDn(i) = ddsID
+        else
+          ddspecID(i) = ddsID
+        endif
     endif
   end do
 
