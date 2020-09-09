@@ -259,9 +259,9 @@ subroutine writeheader_netcdf(lnest)
   logical, intent(in) :: lnest
 
   integer :: ncid, sID, wdsID, ddsID
-  integer :: timeDimID, latDimID, lonDimID, levDimID
+  integer :: timeDimID, latDimID, lonDimID, levDimID, arrivalTimeDimID
   integer :: nspecDimID, npointDimID, nageclassDimID, ncharDimID, pointspecDimID
-  integer :: tID, lonID, latID, levID, poleID, lageID, oroID
+  integer :: tID, lonID, latID, levID, poleID, lageID, oroID, tAID
   integer :: volID, areaID
   integer :: rellng1ID, rellng2ID, rellat1ID, rellat2ID, relzz1ID, relzz2ID
   integer :: relcomID, relkindzID, relstartID, relendID, relpartID, relxmassID
@@ -273,6 +273,7 @@ subroutine writeheader_netcdf(lnest)
   character(len=20)           :: fprefix
   character(len=3)            :: anspec
   CHARACTER                   :: adate*8,atime*6,timeunit*32
+  character(len=32)           :: timearrunit
   !REAL, DIMENSION(1000)       :: coord
   real, allocatable, dimension(:) :: coord
 
@@ -339,10 +340,15 @@ subroutine writeheader_netcdf(lnest)
   ! create dimensions:
   !*************************
   ! time
-  call nf90_err(nf90_def_dim(ncid, 'time', nf90_unlimited, timeDimID))
-  timeunit = 'seconds since '//adate(1:4)//'-'//adate(5:6)// &
-     '-'//adate(7:8)//' '//atime(1:2)//':'//atime(3:4)
-
+  if (ldirect .eq. -1)then
+      
+    call nf90_err(nf90_def_dim(ncid, 'time', nf90_unlimited, timeDimID))
+    timeunit = 'seconds since relase'
+  else
+    call nf90_err(nf90_def_dim(ncid, 'time', nf90_unlimited, timeDimID))
+    timeunit = 'seconds since '//adate(1:4)//'-'//adate(5:6)// &
+      '-'//adate(7:8)//' '//atime(1:2)//':'//atime(3:4)
+  endif
   ! lon
   call nf90_err(nf90_def_dim(ncid, 'longitude', nnx, lonDimID))
   ! lat
@@ -359,8 +365,11 @@ subroutine writeheader_netcdf(lnest)
   call nf90_err(nf90_def_dim(ncid, 'nchar', 45, ncharDimID))
   ! number of actual release points
   call nf90_err(nf90_def_dim(ncid, 'numpoint', numpoint, npointDimID))
-
-
+  if (ldirect .eq. -1) then
+    call nf90_err(nf90_def_dim(ncid, 'arrivaltime', 0, arrivalTimeDimID))
+    timearrunit = 'seconds since '//adate(1:4)//'-'//adate(5:6)// &
+      '-'//adate(7:8)//' '//atime(1:2)//':'//atime(3:4)
+  endif
   ! create variables
   !*************************
 
@@ -374,6 +383,11 @@ subroutine writeheader_netcdf(lnest)
      timeID = tID
   endif
 
+  if (ldirect .eq. -1)then
+    call nf90_err(nf90_def_var(ncid, 'arrivaltime', nf90_int, (/ arrivalTimeDimID /), tAID))
+    call nf90_err(nf90_put_att(ncid, tAID, 'units', timearrunit))
+    call nf90_err(nf90_put_att(ncid, tAID, 'calendar', 'proleptic_gregorian'))
+  endif
   ! lon
   call nf90_err(nf90_def_var(ncid, 'longitude', nf90_float, (/ lonDimID /), lonID))
   call nf90_err(nf90_put_att(ncid, lonID, 'long_name', 'longitude in degree east'))
@@ -543,10 +557,10 @@ subroutine writeheader_netcdf(lnest)
      endif
 
      ! wet and dry deposition fields for forward runs
-     if (wetdep) then
+    if (wetdep) then
         call nf90_err(nf90_def_var(ncid,'WD_spec'//anspec, nf90_float, depdIDs, &
-             wdsID, deflate_level = deflate_level, &
-             chunksizes = dep_chunksizes))
+            wdsID, deflate_level = deflate_level, &
+            chunksizes = dep_chunksizes))
         call nf90_err(nf90_put_att(ncid, wdsID, 'units', '1e-12 kg m-2'))
         call nf90_err(nf90_put_att(ncid, wdsID, 'weta_gas', weta_gas(i)))
         call nf90_err(nf90_put_att(ncid, wdsID, 'wetb_gas', wetb_gas(i)))
@@ -557,15 +571,15 @@ subroutine writeheader_netcdf(lnest)
         call nf90_err(nf90_put_att(ncid, wdsID, 'dquer', dquer(i)))
         call nf90_err(nf90_put_att(ncid, wdsID, 'henry', henry(i)))
         if (lnest) then
-           wdspecIDn(i) = wdsID
+          wdspecIDn(i) = wdsID
         else
-           wdspecID(i) = wdsID
+          wdspecID(i) = wdsID
         endif
-     endif
-     if (drydep) then
+    endif
+    if (drydep) then
         call nf90_err(nf90_def_var(ncid,'DD_spec'//anspec, nf90_float, depdIDs, &
-             ddsID, deflate_level = deflate_level, &
-             chunksizes = dep_chunksizes))
+            ddsID, deflate_level = deflate_level, &
+            chunksizes = dep_chunksizes))
         call nf90_err(nf90_put_att(ncid, ddsID, 'units', '1e-12 kg m-2'))
         call nf90_err(nf90_put_att(ncid, ddsID, 'dryvel', dryvel(i)))
         call nf90_err(nf90_put_att(ncid, ddsID, 'reldiff', reldiff(i)))
@@ -575,11 +589,11 @@ subroutine writeheader_netcdf(lnest)
         call nf90_err(nf90_put_att(ncid, ddsID, 'density', density(i)))
         call nf90_err(nf90_put_att(ncid, ddsID, 'dsigma', dsigma(i)))
         if (lnest) then
-           ddspecIDn(i) = ddsID
+          ddspecIDn(i) = ddsID
         else
-           ddspecID(i) = ddsID
+          ddspecID(i) = ddsID
         endif
-     endif
+    endif
   end do
 
 
