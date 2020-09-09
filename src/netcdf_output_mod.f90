@@ -273,6 +273,7 @@ subroutine writeheader_netcdf(lnest)
   character(len=20)           :: fprefix
   character(len=3)            :: anspec
   CHARACTER                   :: adate*8,atime*6,timeunit*32
+  character(len=32)           :: timearrunit
   !REAL, DIMENSION(1000)       :: coord
   real, allocatable, dimension(:) :: coord
 
