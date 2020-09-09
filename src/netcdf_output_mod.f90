@@ -365,7 +365,7 @@ subroutine writeheader_netcdf(lnest)
   ! number of actual release points
   call nf90_err(nf90_def_dim(ncid, 'numpoint', numpoint, npointDimID))
   if (ldirect .eq. -1) then
-    call nf90_err(nf90_def_dim(ncid, 'arrivaltime', arrivaltime, arrivalTimeDimID))
+    call nf90_err(nf90_def_dim(ncid, 'arrivaltime', 0, arrivalTimeDimID))
     timearrunit = 'seconds since '//adate(1:4)//'-'//adate(5:6)// &
       '-'//adate(7:8)//' '//atime(1:2)//':'//atime(3:4)
   endif
