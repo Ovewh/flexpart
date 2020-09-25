@@ -65,7 +65,7 @@ module par_mod
   ! number of directories/files used for FLEXPART input/output
   !***********************************************************
 
-  integer,parameter :: numpath=4
+  integer,parameter :: numpath=5
 
   ! numpath                 Number of different pathnames for input/output files
 

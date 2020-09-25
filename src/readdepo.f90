@@ -60,7 +60,7 @@ subroutine readdepo
 
   ! Read deposition constants related with landuse and seasonal category
   !*********************************************************************
-  open(unitwesely,file=path(1)(1:length(1))//'surfdepo.t', &
+  open(unitwesely,file=path(5)(1:length(1))//'surfdepo.t', &
        status='old',err=999)
 
   do i=1,16

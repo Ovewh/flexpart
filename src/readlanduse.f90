@@ -87,7 +87,7 @@ subroutine readlanduse
   ! 2 1  percentage 2 = 2*6.25 => 13% landuse class 1
   ! 1 12 percentage 1 = 1*6.26 => 6.25% landuse class 12
 
-  open(unitland,file=path(1)(1:length(1)) &
+  open(unitland,file=path(5)(1:length(1)) &
        //'IGBP_int1.dat',status='old', &
   !    +form='UNFORMATTED', err=998)
        form='UNFORMATTED', err=998, convert='little_endian')
@@ -132,7 +132,7 @@ subroutine readlanduse
   ! Read relation landuse,z0
   !*****************************
 
-  open(unitsurfdata,file=path(1)(1:length(1))//'surfdata.t', &
+  open(unitsurfdata,file=path(5)(1:length(1))//'surfdata.t', &
        status='old',err=999)
 
   do i=1,4
