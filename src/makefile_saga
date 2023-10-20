@@ -53,10 +53,12 @@ FLEXPART-SERIAL = FLEXPART
 F90       = ifort
 MPIF90    = mpiifort
 
-INCPATH1 = ${EBROOTNETCDFMINFORTRAN}/include
-INCPATH2 = /cluster/software/ecCodes/2.9.2-intel-2018b/include 
-LIBPATH1 = ${EBROOTNETCDFMINFORTRAN}/lib 
-LIBPATH2 = /cluster/software/ecCodes/2.9.2-intel-2018b/lib 
+INCPATH1 = /cluster/software/netCDF-Fortran/4.5.2-iimpi-2019b/include
+#INCPATH2 = /cluster/projects/nn2806k/ovewh/miniconda3/envs/ecCodes_test/include 
+INCPATH2 = /cluster/software/ecCodes/2.15.0-iimpi-2019b/include
+LIBPATH1 = /cluster/software/netCDF-Fortran/4.5.2-iimpi-2019b/lib 
+#LIBPATH2 = /cluster/projects/nn2806k/ovewh/miniconda3/envs/ecCodes_test/lib 
+LIBPATH2 = /cluster/software/ecCodes/2.15.0-iimpi-2019b/lib
 ### Enable netCDF output?
 ifeq ($(ncf), yes)
 	NCOPT = -DUSE_NCF -lnetcdff	
@@ -72,7 +74,7 @@ VPATH = gributils/
 
 
 ## OPTIMIZATION LEVEL
-O_LEV = 0 # [0,1,2,3,g,s,fast]
+O_LEV = 3 # [0,1,2,3,g,s,fast]
 O_LEV_DBG = g # [0,g]
 
 ## LIBRARIES
